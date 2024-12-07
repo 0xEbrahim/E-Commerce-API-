@@ -14,6 +14,12 @@ const userSchema = new mongoose.Schema(
       // required: true,
       lowercase: true,
     },
+    role: {
+      type: String,
+      required: true,
+      default: "user",
+      enum: ["admin", "user"],
+    },
     email: {
       type: String,
       required: [true, "User's email is required"],
@@ -58,6 +64,7 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true, toJSON: true }
 );
+
 userSchema.index({ slug: 1 });
 
 userSchema.pre("save", async function (next) {
@@ -86,15 +93,6 @@ userSchema.methods.createEmailConfirmationToken = function () {
   this.emailConfirmationToken = encoded;
   this.emailTokenExpires = Date.now() + 10 * 60 * 1000;
   return token;
-};
-
-userSchema.methods.emailConfirmationTokenExpired = function () {
-  if (Date.now() > this.emailTokenExpires) {
-    this.emailConfirmationToken = undefined;
-    this.emailTokenExpires = undefined;
-    return true;
-  }
-  return false;
 };
 
 userSchema.methods.createPasswordResetToken = function () {

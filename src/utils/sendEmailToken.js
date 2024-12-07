@@ -1,10 +1,10 @@
 import { sendEmail } from "../config/sendEmail.js";
-import { generateTemplate } from "../public/email.js";
+import { generateEmailTemplate } from "../public/templates.js";
 
 export const sendEmailToken = async (user) => {
   const confirmToken = user.createEmailConfirmationToken();
   await user.save();
-  const html = generateTemplate(confirmToken);
+  const html = generateEmailTemplate(confirmToken);
   const data = {
     email: user.email,
     subject: "Email confirmation",

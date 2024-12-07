@@ -4,6 +4,7 @@ import APIError from "../utils/APIError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { sendEmailToken } from "../utils/sendEmailToken.js";
 import { createAccessToken } from "../utils/JWT.js";
+import { sendPasswordToken } from "../utils/sendPasswordResetToken.js";
 
 export const signup = asyncHandler(async (req, res, next) => {
   const { name, email, password } = req.body;
@@ -25,9 +26,14 @@ export const confirmEmail = asyncHandler(async (req, res, next) => {
   if (!token)
     return next(new APIError("Provide email confirmation token.", 400));
   const encoded = crypto.createHash("sha256").update(token).digest("hex");
-  const user = await User.findOne({ emailConfirmationToken: encoded });
+  const user = await User.findOne({
+    emailConfirmationToken: encoded,
+    emailTokenExpires: { $gt: Date.now() },
+  });
   if (!user) {
-    return next(new APIError("Invalid email confirmation token", 400));
+    return next(
+      new APIError("Invalid or expired email confirmation token", 400)
+    );
   }
   if (user.emailConfirmationTokenExpired()) {
     sendEmailToken(user);
@@ -39,6 +45,7 @@ export const confirmEmail = asyncHandler(async (req, res, next) => {
   }
   user.emailConfirmed = true;
   user.emailConfirmationToken = undefined;
+  user.emailTokenExpires = undefined;
   await user.save();
   res.status(200).json({
     status: "success",
@@ -76,5 +83,37 @@ export const login = asyncHandler(async (req, res, next) => {
       user,
     },
     token,
+  });
+});
+
+export const forgotPassword = asyncHandler(async (req, res, next) => {
+  const { email } = req.body;
+  const user = await User.findOne({ email: email });
+  if (!user)
+    return next(new APIError("There is no user with this email address", 400));
+  sendPasswordToken(user);
+  res.status(200).json({
+    status: "success",
+    message:
+      "We sent a message to your email, please check it to reset your password",
+  });
+});
+
+export const resetPassword = asyncHandler(async (req, res, next) => {
+  const { token } = req.query;
+  const user = await User.findOne({
+    passwordResetToken: token,
+    passwordResetTokenExpires: { $gt: Date.now() },
+  });
+  if (!user)
+    return next(new APIError("Invalid or expired password reset token.", 400));
+  const { password } = req.body;
+  user.password = password;
+  user.passwordResetToken = undefined;
+  user.passwordResetTokenExpires = undefined;
+  await user.save();
+  res.status(200).json({
+    status: "success",
+    message: "password reset successfully, try to login with the new password",
   });
 });
