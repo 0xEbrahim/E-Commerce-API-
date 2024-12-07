@@ -85,20 +85,29 @@ userSchema.methods.createEmailConfirmationToken = function () {
   const token = crypto.randomBytes(32).toString("hex");
   const encoded = crypto.createHash("sha256").update(token).digest("hex");
   this.emailConfirmationToken = encoded;
-  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+  this.emailTokenExpires = Date.now() + 10 * 60 * 1000;
   return token;
 };
 
 userSchema.methods.emailConfirmationTokenExpired = function () {
-  return Date.now() > this.emailTokenExpires;
+  if (Date.now() > this.emailTokenExpires) {
+    this.emailConfirmationToken = undefined;
+    this.emailTokenExpires = undefined;
+    return true;
+  }
+  return false;
 };
 
 userSchema.methods.createPasswordResetToken = function () {
   const token = crypto.randomBytes(32).toString("hex");
   const encoded = crypto.createHash("sha256").update(token).digest("hex");
   this.passwordResetToken = encoded;
-  this.emailTokenExpires = Date.now() + 10 * 60 * 1000;
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
   return token;
+};
+
+userSchema.methods.matchPassword = async function (password) {
+  return await bcrypt.compare(password, this.password);
 };
 
 export default mongoose.model("User", userSchema);
