@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema(
       default: null,
     },
     emailConfirmed: {
-      type: String,
+      type: Boolean,
       default: false,
     },
     emailTokenExpires: {
@@ -33,7 +33,6 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
-      select: false,
     },
     passwordResetToken: {
       type: String,
@@ -61,9 +60,9 @@ const userSchema = new mongoose.Schema(
 );
 userSchema.index({ slug: 1 });
 
-userSchema.pre("save", function (next) {
+userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) next();
-  this.password = bcrypt.hashSync(this.password, 12);
+  this.password = await bcrypt.hash(this.password, 12);
   next();
 });
 
@@ -106,8 +105,8 @@ userSchema.methods.createPasswordResetToken = function () {
   return token;
 };
 
-userSchema.methods.matchPassword = async function (password) {
-  return await bcrypt.compare(password, this.password);
+userSchema.methods.matchPassword = async (candiPassword, password) => {
+  return await bcrypt.compare(candiPassword, password);
 };
 
 export default mongoose.model("User", userSchema);

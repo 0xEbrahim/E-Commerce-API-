@@ -1,4 +1,5 @@
 import express from "express";
+import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import morgan from "morgan";
 import { connectDB } from "./config/db.js";
@@ -9,8 +10,11 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
 app.use(express.json());
+app.use(cookieParser());
 app.use(morgan("dev"));
+
 app.use("/api/v1", rootRouter);
 app.all("*", unhandledRoutes);
 app.use(errorHandler);
