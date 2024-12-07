@@ -65,7 +65,7 @@ const userSchema = new mongoose.Schema(
     },
     lastOnline: {
       type: Date,
-      default: new Date('1990-01-01')
+      default: new Date("1990-01-01"),
     },
     twoStepAuth: {
       type: Boolean,

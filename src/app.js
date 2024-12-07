@@ -7,7 +7,7 @@ import rootRouter from "./routes/index.js";
 import { errorHandler, unhandledRoutes } from "./middlewares/errorHandler.js";
 
 dotenv.config();
-
+console.log(process.env.CLOUD_KEY)
 const app = express();
 const PORT = process.env.PORT || 5000;
 
