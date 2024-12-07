@@ -264,5 +264,5 @@ export const googleCallback = passport.authenticate("google", {
 });
 
 export const googleCallbackRoute = (req, res, next) => {
-  res.redirect("http://localhost:5000/api/v1/user/me");
+  res.redirect("http://localhost:5000/api/v1/users/me");
 };

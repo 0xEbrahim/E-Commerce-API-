@@ -2,6 +2,7 @@ import passport from "passport";
 import GoogleStrategy from "passport-google-oauth20";
 import User from "../models/userModel.js";
 import dotnev from "dotenv";
+import APIError from "../utils/APIError.js";
 dotnev.config();
 
 export const strategy = new GoogleStrategy.Strategy(
@@ -13,18 +14,21 @@ export const strategy = new GoogleStrategy.Strategy(
   async (accessToken, refreshToken, profile, done) => {
     console.log(profile);
     try {
-      const user = await User.findOne({ googleId: profile.id });
-      if (!user)
-        await User.create({
-          googleId: profile.id,
-          email: profile.email,
-          avatar: profile.picture,
-          name: profile.name,
+      let user = await User.findOne({ googleId: profile.id });
+      if (!user) {
+        user = await User.create({
+          googleId: profile._json.sub,
+          email: profile._json.email,
+          avatar: profile._json.picture,
+          name: profile._json.name,
           emailConfirmed: true,
           password: (Math.random() * 10000000000 + " ").toString(),
         });
-    } catch (err) {}
-    return done(null, profile);
+      }
+      done(null, user);
+    } catch (err) {
+      throw new APIError(err.message, 500);
+    }
   }
 );
 
