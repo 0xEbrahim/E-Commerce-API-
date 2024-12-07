@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema(
     },
     emailConfirmationToken: {
       type: String,
-      default: null,
+      default: undefined,
     },
     emailConfirmed: {
       type: Boolean,
@@ -35,6 +35,7 @@ const userSchema = new mongoose.Schema(
     },
     emailTokenExpires: {
       type: Date,
+      default: undefined,
     },
     password: {
       type: String,
@@ -42,11 +43,11 @@ const userSchema = new mongoose.Schema(
     },
     passwordResetToken: {
       type: String,
-      default: null,
+      default: undefined,
     },
     passwordResetTokenExpires: {
       type: Date,
-      default: null,
+      default: undefined,
     },
     passwordChangedAt: {
       type: Date,
@@ -99,7 +100,7 @@ userSchema.methods.createPasswordResetToken = function () {
   const token = crypto.randomBytes(32).toString("hex");
   const encoded = crypto.createHash("sha256").update(token).digest("hex");
   this.passwordResetToken = encoded;
-  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+  this.passwordResetTokenExpires = Date.now() + 10 * 60 * 1000;
   return token;
 };
 
