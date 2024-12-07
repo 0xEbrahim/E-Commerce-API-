@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import slugify from "slugify";
@@ -24,6 +25,9 @@ const userSchema = new mongoose.Schema({
   emailConfirmed: {
     type: String,
     default: false,
+  },
+  emailTokenExpires: {
+    type: Date,
   },
   password: {
     type: String,
@@ -66,5 +70,21 @@ userSchema.pre("save", function (next) {
   });
   next();
 });
+
+userSchema.methods.createEmailConfirmationToken = function () {
+  const token = crypto.randomBytes(32).toString("hex");
+  const encoded = crypto.createHash("sha256").update(token).digest("hex");
+  this.emailConfirmationToken = encoded;
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+  return token;
+};
+
+userSchema.methods.createPasswordResetToken = function () {
+  const token = crypto.randomBytes(32).toString("hex");
+  const encoded = crypto.createHash("sha256").update(token).digest("hex");
+  this.passwordResetToken = encoded;
+  this.emailTokenExpires = Date.now() + 10 * 60 * 1000;
+  return token;
+};
 
 export default mongoose.model("User", userSchema);
