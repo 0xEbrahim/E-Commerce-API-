@@ -97,12 +97,13 @@ export const twoStepAuth = asyncHandler(async (req, res, next) => {
 });
 
 export const logout = asyncHandler(async (req, res, next) => {
+    console.log("ffvda")
   let user = req.user;
-  user = await User.findById(user.id);
+  user = await User.findById(user._id);
   user.lastOnline = Date.now() - 1000;
   await user.save();
   res.clearCookie("jwt");
-  res.status("200").json({
+  res.status(200).json({
     status: "success",
     message: "Logged out successfully",
   });
