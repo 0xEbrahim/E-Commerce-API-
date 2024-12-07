@@ -1,10 +1,8 @@
 import { sendEmail } from "../config/sendEmail.js";
-import {
-  generatePasswordTemplate,
-} from "../public/templates.js";
+import { generatePasswordTemplate } from "../public/templates.js";
 
-export const sendPasswordToken = async(user) => {
-    const confirmToken = user.createPasswordResetToken();
+export const sendPasswordToken = async (user) => {
+  const confirmToken = user.createPasswordResetToken();
   await user.save();
   const html = generatePasswordTemplate(confirmToken);
   const data = {
@@ -13,4 +11,4 @@ export const sendPasswordToken = async(user) => {
     html,
   };
   await sendEmail(data);
-}
+};
