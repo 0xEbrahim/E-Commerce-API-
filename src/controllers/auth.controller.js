@@ -5,7 +5,6 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { sendEmailToken } from "../utils/sendEmailToken.js";
 import {
   createAccessToken,
-  createRefreshToken,
   verfiyToken,
 } from "../utils/JWT.js";
 import { sendPasswordToken } from "../utils/sendPasswordResetToken.js";
@@ -69,7 +68,6 @@ export const login = asyncHandler(async (req, res, next) => {
     });
   }
   if (user.twoStepAuth) {
-    console.log("FF");
     await sendOTP(user);
     return res.status(200).json({
       status: "success",
