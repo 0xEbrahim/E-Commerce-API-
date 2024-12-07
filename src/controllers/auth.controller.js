@@ -9,6 +9,8 @@ import {
   verfiyToken,
 } from "../utils/JWT.js";
 import { sendPasswordToken } from "../utils/sendPasswordResetToken.js";
+import { sendOTP } from "../utils/sendOTP.js";
+import { sendTokenResponse } from "../utils/sendTokenResponse.js";
 
 export const signup = asyncHandler(async (req, res, next) => {
   const { name, email, password } = req.body;
@@ -20,7 +22,7 @@ export const signup = asyncHandler(async (req, res, next) => {
     password,
     avatar: avatar.path,
   });
-  sendEmailToken(user);
+  await sendEmailToken(user);
   res.status(201).json({
     status: "success",
     message:
@@ -41,14 +43,6 @@ export const confirmEmail = asyncHandler(async (req, res, next) => {
     return next(
       new APIError("Invalid or expired email confirmation token", 400)
     );
-  }
-  if (user.emailConfirmationTokenExpired()) {
-    sendEmailToken(user);
-    return res.status(400).json({
-      status: "fail",
-      message:
-        "Expired confirmation token, we sent you a new token, please check your email again",
-    });
   }
   user.emailConfirmed = true;
   user.emailConfirmationToken = undefined;
@@ -74,24 +68,34 @@ export const login = asyncHandler(async (req, res, next) => {
         "You can't login without confirming your email address, please check you email to verfiy your account",
     });
   }
-  const token = await createAccessToken(user._id);
-  const refreshToken = await createRefreshToken(user._id);
-  const cookieOptions = {
-    expires: new Date(
-      Date.now() + process.env.JWT_COOKIE_AGE * 24 * 60 * 60 * 1000
-    ),
-    httpOnly: true,
-  };
-  if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
-  res.cookie("jwt", refreshToken, cookieOptions);
-  user.password = undefined;
-  res.status(200).json({
-    status: "success",
-    data: {
-      user,
+  if (user.twoStepAuth) {
+    console.log("FF");
+    await sendOTP(user);
+    return res.status(200).json({
+      status: "success",
+      message:
+        "OTP code has been sent to your email, please use it to continue login",
+    });
+  }
+  await sendTokenResponse(res, user);
+});
+
+export const twoStepAuth = asyncHandler(async (req, res, next) => {
+  const { otp } = req.body;
+  const encoded = crypto.createHash("sha256").update(otp).digest("hex");
+  const user = await User.findOne({
+    OTP: encoded,
+    OTPExpires: {
+      $gt: Date.now(),
     },
-    token,
   });
+  if (!user) {
+    return next(new APIError("Invalid or expired OTP", 401));
+  }
+  user.OTP = undefined;
+  user.OTPExpires = undefined;
+  await user.save();
+  await sendTokenResponse(res, user);
 });
 
 export const logout = asyncHandler(async (req, res, next) => {

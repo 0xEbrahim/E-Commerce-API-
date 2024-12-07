@@ -10,6 +10,7 @@ router.post("/logout", isAuthenticated, authController.logout);
 router.post("/signup", uploadSingle, userImageResize, authController.signup);
 router.post("/refresh", authController.refreshToken);
 router.post("/forgotPassword", authController.forgotPassword);
+router.post("/twoFactor", authController.twoStepAuth);
 router.patch("/resetPassword", authController.resetPassword);
 router.patch("/confirm", authController.confirmEmail);
 export default router;

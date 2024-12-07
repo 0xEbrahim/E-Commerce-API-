@@ -9,12 +9,14 @@ export const sendEmail = async (data) => {
       user: process.env.EMAIL_USERNAME,
       pass: process.env.EMAIL_PASSWORD,
     },
+    tls: {
+      rejectUnauthorized: false,
+    },
   });
   const emailInfo = {
     from: '"Ebrahim El-Sayed" <maddison53@ethereal.email>',
     to: data.email,
     subject: data.subject,
-    // text: data.text,
     html: data.html,
   };
   const info = await transporter.sendMail(emailInfo);

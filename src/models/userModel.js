@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import otpGenerator from "otp-generator";
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import slugify from "slugify";
@@ -65,6 +66,18 @@ const userSchema = new mongoose.Schema(
     lastOnline: {
       type: Date,
     },
+    twoStepAuth: {
+      type: Boolean,
+      default: false,
+    },
+    OTP: {
+      type: String,
+      default: undefined,
+    },
+    OTPExpires: {
+      type: Date,
+      default: undefined,
+    },
   },
   { timestamps: true, toJSON: true }
 );
@@ -113,6 +126,17 @@ userSchema.methods.passwordChangedAfter = function (JWT_Time) {
 
 userSchema.methods.matchPassword = async (candiPassword, password) => {
   return await bcrypt.compare(candiPassword, password);
+};
+
+userSchema.methods.createOTP = function () {
+  const otp = otpGenerator.generate(8, {
+    upperCaseAlphabets: false,
+    specialChars: true,
+  });
+  const encrypted = crypto.createHash("sha256").update(otp).digest("hex");
+  this.OTP = encrypted;
+  this.OTPExpires = Date.now() + 10 * 60 * 60 * 1000;
+  return otp;
 };
 
 export default mongoose.model("User", userSchema);
