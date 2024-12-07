@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
+import slugify from "slugify";
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -8,7 +9,8 @@ const userSchema = new mongoose.Schema({
   },
   slug: {
     type: String,
-    required: true,
+    // required: true,
+    lowercase: true,
   },
   email: {
     type: String,
@@ -54,6 +56,14 @@ userSchema.index({ slug: 1 });
 userSchema.pre("save", function (next) {
   if (!this.isModified("password")) next();
   this.password = bcrypt.hashSync(this.password, 12);
+  next();
+});
+
+userSchema.pre("save", function (next) {
+  this.slug = slugify(this.name, {
+    lower: true,
+    trim: true,
+  });
   next();
 });
 
