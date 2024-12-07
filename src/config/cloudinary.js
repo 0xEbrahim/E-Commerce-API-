@@ -1,10 +1,10 @@
 import cloudinary from "cloudinary";
-
+import dotnev from "dotenv";
+dotnev.config();
 cloudinary.config({
-  cloud_name: `${process.env.CLOUD_NAME}`,
-  api_key: `${process.env.CLOUD_KEY}`,
-  api_secret: `${process.env.CLOUD_SECRET}`,
-  //sign_url: process.env.CLOUDINARY_URL,
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUD_KEY,
+  api_secret: process.env.CLOUD_SECRET,
 });
 
 const cloudinaryUpload = (file) => {
