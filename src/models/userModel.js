@@ -33,6 +33,7 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
+      select: false,
     },
     passwordResetToken: {
       type: String,
@@ -86,6 +87,10 @@ userSchema.methods.createEmailConfirmationToken = function () {
   this.emailConfirmationToken = encoded;
   this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
   return token;
+};
+
+userSchema.methods.emailConfirmationTokenExpired = function () {
+  return Date.now() > this.emailTokenExpires;
 };
 
 userSchema.methods.createPasswordResetToken = function () {
