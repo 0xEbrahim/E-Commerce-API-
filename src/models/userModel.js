@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import bcrypt from "bcrypt";
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -48,7 +49,12 @@ const userSchema = new mongoose.Schema({
     default: true,
   },
 });
-
 userSchema.index({ slug: 1 });
+
+userSchema.pre("save", function (next) {
+  if (!this.isModified("password")) next();
+  this.password = bcrypt.hashSync(this.password, 12);
+  next();
+});
 
 export default mongoose.model("User", userSchema);
