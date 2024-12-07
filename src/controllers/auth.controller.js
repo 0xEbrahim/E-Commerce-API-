@@ -3,7 +3,11 @@ import User from "../models/userModel.js";
 import APIError from "../utils/APIError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { sendEmailToken } from "../utils/sendEmailToken.js";
-import { createAccessToken } from "../utils/JWT.js";
+import {
+  createAccessToken,
+  createRefreshToken,
+  verfiyToken,
+} from "../utils/JWT.js";
 import { sendPasswordToken } from "../utils/sendPasswordResetToken.js";
 
 export const signup = asyncHandler(async (req, res, next) => {
@@ -68,6 +72,7 @@ export const login = asyncHandler(async (req, res, next) => {
     });
   }
   const token = await createAccessToken(user._id);
+  const refreshToken = await createRefreshToken(user._id);
   const cookieOptions = {
     expires: new Date(
       Date.now() + process.env.JWT_COOKIE_AGE * 24 * 60 * 60 * 1000
@@ -75,13 +80,34 @@ export const login = asyncHandler(async (req, res, next) => {
     httpOnly: true,
   };
   if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
-  res.cookie("jwt", token, cookieOptions);
+  res.cookie("jwt", refreshToken, cookieOptions);
   user.password = undefined;
   res.status(200).json({
     status: "success",
     data: {
       user,
     },
+    token,
+  });
+});
+
+
+export const logout = asyncHandler(async(req, res, next) => {
+    
+})
+
+
+export const refreshToken = asyncHandler(async (req, res, next) => {
+  let token = req.cookies.jwt;
+  if (!token)
+    return next(new APIError("Session timed out, please login again", 401));
+  const decoded = await verfiyToken(token);
+  const user = await User.findById(decoded.id);
+  if (!user)
+    return next(new APIError("Invalid token, please try login again", 400));
+  token = await createAccessToken(decoded.id);
+  res.status(200).json({
+    status: "success",
     token,
   });
 });

@@ -62,6 +62,9 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    lastOnline: {
+      type: Date,
+    },
   },
   { timestamps: true, toJSON: true }
 );
@@ -102,6 +105,10 @@ userSchema.methods.createPasswordResetToken = function () {
   this.passwordResetToken = encoded;
   this.passwordResetTokenExpires = Date.now() + 10 * 60 * 1000;
   return token;
+};
+
+userSchema.methods.passwordChangedAfter = function (JWT_Time) {
+  return parseInt(this.passwordChangedAt.getTime() / 1000, 10) > JWT_Time;
 };
 
 userSchema.methods.matchPassword = async (candiPassword, password) => {
