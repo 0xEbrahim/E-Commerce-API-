@@ -2,9 +2,14 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import morgan from "morgan";
+import session from "express-session";
+import passport from "./config/passport.js";
 import { connectDB } from "./config/db.js";
 import rootRouter from "./routes/index.js";
 import { errorHandler, unhandledRoutes } from "./middlewares/errorHandler.js";
+
+
+
 
 dotenv.config();
 const app = express();
@@ -16,6 +21,15 @@ process.on("uncaughtException", (err) => {
   process.exit(1);
 });
 
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true,
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(express.json());
 app.use(cookieParser());
 app.use(morgan("dev"));

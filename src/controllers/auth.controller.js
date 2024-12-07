@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import fs from "fs";
+import passport from "passport";
 import User from "../models/userModel.js";
 import APIError from "../utils/APIError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -9,6 +10,7 @@ import { sendPasswordToken } from "../utils/sendPasswordResetToken.js";
 import { sendOTP } from "../utils/sendOTP.js";
 import { sendTokenResponse } from "../utils/sendTokenResponse.js";
 import uploader from "../config/cloudinary.js";
+
 /**
  * @method signup
  * Registers a new user and sends an email confirmation token.
@@ -105,7 +107,7 @@ export const login = asyncHandler(async (req, res, next) => {
     return res.status(403).json({
       status: "fail",
       message:
-        "You can't login without confirming your email address, please check you email to verfiy your account",
+        "You can't login without confirming your email address, please check your email to verfiy your account",
     });
   }
   if (user.twoStepAuth) {
@@ -252,3 +254,15 @@ export const resetPassword = asyncHandler(async (req, res, next) => {
     message: "password reset successfully, try to login with the new password",
   });
 });
+
+export const googleAuth = passport.authenticate("google", {
+  scope: ["profile", "email"],
+});
+
+export const googleCallback = passport.authenticate("google", {
+  failureRedirect: "/",
+});
+
+export const googleCallbackRoute = (req, res, next) => {
+  res.redirect("http://localhost:5000/api/v1/user/me");
+};

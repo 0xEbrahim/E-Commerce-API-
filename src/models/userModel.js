@@ -6,6 +6,11 @@ import slugify from "slugify";
 
 const userSchema = new mongoose.Schema(
   {
+    googleId: {
+      type: String,
+      default: undefined,
+    },
+
     name: {
       type: String,
       required: [true, "User's name is required"],
