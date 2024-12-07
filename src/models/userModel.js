@@ -3,58 +3,61 @@ import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import slugify from "slugify";
 
-const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, "User's name is required"],
+const userSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: [true, "User's name is required"],
+    },
+    slug: {
+      type: String,
+      // required: true,
+      lowercase: true,
+    },
+    email: {
+      type: String,
+      required: [true, "User's email is required"],
+      unique: true,
+    },
+    emailConfirmationToken: {
+      type: String,
+      default: null,
+    },
+    emailConfirmed: {
+      type: String,
+      default: false,
+    },
+    emailTokenExpires: {
+      type: Date,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    passwordResetToken: {
+      type: String,
+      default: null,
+    },
+    passwordResetTokenExpires: {
+      type: Date,
+      default: null,
+    },
+    passwordChangedAt: {
+      type: Date,
+    },
+    avatar: {
+      type: String,
+    },
+    updatedAt: {
+      type: String,
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
   },
-  slug: {
-    type: String,
-    // required: true,
-    lowercase: true,
-  },
-  email: {
-    type: String,
-    required: [true, "User's email is required"],
-    unique: true,
-  },
-  emailConfirmationToken: {
-    type: String,
-    default: null,
-  },
-  emailConfirmed: {
-    type: String,
-    default: false,
-  },
-  emailTokenExpires: {
-    type: Date,
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-  passwordResetToken: {
-    type: String,
-    default: null,
-  },
-  passwordResetTokenExpires: {
-    type: Date,
-    default: null,
-  },
-  passwordChangedAt: {
-    type: Date,
-  },
-  avatar: {
-    type: String,
-  },
-  updatedAt: {
-    type: String,
-  },
-  isActive: {
-    type: Boolean,
-    default: true,
-  },
-});
+  { timestamps: true, toJSON: true }
+);
 userSchema.index({ slug: 1 });
 
 userSchema.pre("save", function (next) {
@@ -68,6 +71,12 @@ userSchema.pre("save", function (next) {
     lower: true,
     trim: true,
   });
+  next();
+});
+
+userSchema.pre("save", function (next) {
+  if (!this.isModified("password") || this.isNew) next();
+  this.passwordChangedAt = Date.now() - 1000;
   next();
 });
 
