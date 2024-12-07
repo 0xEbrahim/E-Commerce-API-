@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import fs from "fs";
 import User from "../models/userModel.js";
 import APIError from "../utils/APIError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -7,7 +8,7 @@ import { createAccessToken, verfiyToken } from "../utils/JWT.js";
 import { sendPasswordToken } from "../utils/sendPasswordResetToken.js";
 import { sendOTP } from "../utils/sendOTP.js";
 import { sendTokenResponse } from "../utils/sendTokenResponse.js";
-
+import uploader from "../config/cloudinary.js";
 /**
  * @method signup
  * Registers a new user and sends an email confirmation token.
@@ -22,13 +23,17 @@ import { sendTokenResponse } from "../utils/sendTokenResponse.js";
 
 export const signup = asyncHandler(async (req, res, next) => {
   const { name, email, password } = req.body;
-  let avatar;
-  if (req.file) avatar = req.file;
+  const avatar = req.file?.path;
+  let uploaded;
+  if (avatar) {
+    uploaded = await uploader(avatar);
+    fs.unlinkSync(avatar);
+  }
   const user = await User.create({
     name,
     email,
     password,
-    avatar: avatar.path,
+    avatar: uploaded.url,
   });
   await sendEmailToken(user);
   res.status(201).json({
