@@ -91,11 +91,17 @@ export const login = asyncHandler(async (req, res, next) => {
   });
 });
 
-
-export const logout = asyncHandler(async(req, res, next) => {
-    
-})
-
+export const logout = asyncHandler(async (req, res, next) => {
+  let user = req.user;
+  user = await User.findById(user.id);
+  user.lastOnline = Date.now() - 1000;
+  await user.save();
+  res.clearCookie("jwt");
+  res.status("200").json({
+    status: "success",
+    message: "Logged out successfully",
+  });
+});
 
 export const refreshToken = asyncHandler(async (req, res, next) => {
   let token = req.cookies.jwt;

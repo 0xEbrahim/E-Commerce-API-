@@ -16,13 +16,17 @@ export const isAuthenticated = asyncHandler(async (req, res, next) => {
         "This token is not valid anymore, this user maybe deleted or banned"
       )
     );
-  if (user.passwordChangedAfter(decoded.iat))
+
+  if (
+    user.passwordChangedAfter(decoded.iat) ||
+    parseInt(user.lastOnline.getTime() / 1000, 10) > decoded.iat
+  )
     return next(
       new APIError(
-        "This token is not valid anymore, User recently changed password",
+        "This token is not valid anymore, User recently changed password or logged out",
         401
       )
     );
   req.user = user;
-  next;
+  next();
 });
