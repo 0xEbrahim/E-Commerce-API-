@@ -30,7 +30,7 @@ export const getAllUsers = asyncHandler(async (req, res, next) => {
 });
 
 export const getUser = asyncHandler(async (req, res, next) => {
-  const { id } = req.body;
+  const { id } = req.params;
   const user = await User.findById(id);
   if (!user) return next(new APIError("User not found", 404));
   user.password = undefined;
@@ -44,6 +44,7 @@ export const getUser = asyncHandler(async (req, res, next) => {
 
 /*
   TODO: get the old password and check it first
+  TODO: Send email to the user to make sure that he is the one who changed the password
 */
 export const updatePassword = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.user._id);
