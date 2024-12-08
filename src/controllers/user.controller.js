@@ -1,5 +1,6 @@
 import User from "../models/userModel.js";
 import APIError from "../utils/APIError.js";
+import APIFeatures from "../utils/APIFeatures.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 export const myProfile = asyncHandler(async (req, res, next) => {
@@ -9,6 +10,21 @@ export const myProfile = asyncHandler(async (req, res, next) => {
     status: "success",
     data: {
       user,
+    },
+  });
+});
+
+export const getAllUsers = asyncHandler(async (req, res, next) => {
+  const features = new APIFeatures(User.find(), req.query)
+    .filter()
+    .sort()
+    .fieldsLimit()
+    .paginate();
+  const users = await features.query;
+  res.status(200).json({
+    status: "success",
+    data: {
+      users,
     },
   });
 });
