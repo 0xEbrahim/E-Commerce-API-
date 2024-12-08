@@ -263,6 +263,11 @@ export const googleCallback = passport.authenticate("google", {
   failureRedirect: "/",
 });
 
-export const googleCallbackRoute = (req, res, next) => {
+export const googleCallbackRoute = async (req, res, next) => {
+  const token = await createAccessToken(req.user._id);
+  res.cookie("x-auth-cookie", token, {
+    maxAge: 5 * 60 * 60 * 1000,
+    httpOnly: true,
+  });
   res.redirect("http://localhost:5000/api/v1/users/me");
 };

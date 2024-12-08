@@ -12,7 +12,6 @@ export const strategy = new GoogleStrategy.Strategy(
     callbackURL: "http://localhost:5000/api/v1/auth/google/callback",
   },
   async (accessToken, refreshToken, profile, done) => {
-    console.log(profile);
     try {
       let user = await User.findOne({ googleId: profile.id });
       if (!user) {

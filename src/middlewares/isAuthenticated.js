@@ -4,7 +4,14 @@ import { verfiyToken } from "../utils/JWT.js";
 import User from "../models/userModel.js";
 
 export const isAuthenticated = asyncHandler(async (req, res, next) => {
+  if (req.user) return next();
   let token = req.headers.authorization;
+  const cookie = req.cookies["x-auth-cookie"];
+  // console.log(cookie);
+  if (cookie) {
+    // console.log("Cookie");
+    return next();
+  }
   if (!token || !token.startsWith("Bearer"))
     return next(new APIError("You must be logged in to continue", 401));
   token = token.split(" ")[1];
