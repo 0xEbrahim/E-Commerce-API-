@@ -13,6 +13,18 @@ export const myProfile = asyncHandler(async (req, res, next) => {
   });
 });
 
+export const getUser = asyncHandler(async (req, res, next) => {
+  const { id } = req.body;
+  const user = await User.findById(id);
+  if (!user) return next(new APIError("User not found", 404));
+  user.password = undefined;
+  res.status(200).json({
+    status: "success",
+    data: {
+      user,
+    },
+  });
+});
 
 /*
   TODO: get the old password and check it first
