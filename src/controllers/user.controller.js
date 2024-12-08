@@ -13,6 +13,10 @@ export const myProfile = asyncHandler(async (req, res, next) => {
   });
 });
 
+
+/*
+  TODO: get the old password and check it first
+*/
 export const updatePassword = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.user._id);
   if (!user) return next(new APIError("Invalid or deactivated user", 400));
