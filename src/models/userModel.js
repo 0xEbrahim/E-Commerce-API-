@@ -141,7 +141,7 @@ userSchema.methods.createOTP = function () {
   });
   const encrypted = crypto.createHash("sha256").update(otp).digest("hex");
   this.OTP = encrypted;
-  this.OTPExpires = Date.now() + 10 * 60 * 60 * 1000;
+  this.OTPExpires = Date.now() + 10 * 60  * 1000;
   return otp;
 };
 
