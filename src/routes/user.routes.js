@@ -4,6 +4,6 @@ import { isAuthenticated } from "../middlewares/isAuthenticated.js";
 
 const router = express.Router();
 
-router.use("/me", isAuthenticated, userController.myProfile);
-
+router.get("/me", isAuthenticated, userController.myProfile);
+router.patch("/updatePassword", isAuthenticated, userController.updatePassword);
 export default router;

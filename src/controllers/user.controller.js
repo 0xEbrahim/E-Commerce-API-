@@ -12,3 +12,18 @@ export const myProfile = asyncHandler(async (req, res, next) => {
     },
   });
 });
+
+export const updatePassword = asyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.user._id);
+  if (!user) return next(new APIError("Invalid or deactivated user", 400));
+  const { password } = req.body;
+  user.password = password;
+  await user.save();
+  user.password = undefined;
+  res.status(200).json({
+    status: "success",
+    data: {
+      user,
+    },
+  });
+});
