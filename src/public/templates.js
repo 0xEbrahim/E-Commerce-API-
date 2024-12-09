@@ -240,3 +240,125 @@ export const generatechangePasswordConfirmTemplate = (email) => {
 `;
   return html;
 };
+
+export const generateAccountDeactivatedTemplate = () => {
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account Deactivated</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 20px auto;
+      background-color: #ffffff;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .button {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      color: #ffffff;
+      background-color: #007bff;
+      text-decoration: none;
+      border-radius: 5px;
+    }
+    .button:hover {
+      background-color: #0056b3;
+    }
+    .footer {
+      margin-top: 20px;
+      font-size: 12px;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Account Deactivated</h1>
+    <p>Hello,</p>
+    <p>We wanted to let you know that your account has been deactivated. If you requested this action, no further steps are needed.</p>
+    <p>You still can retrieve your account within 30 days.</p>
+    <p>If you have any questions, please don't hesitate to reach out.</p>
+    <div class="footer">
+      <p>© 2024 Your Company. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>
+`;
+  return html;
+};
+
+
+export const generateReactivateAccountTemplate = () => {
+  const html =`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account Reactivated</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 20px auto;
+      background-color: #ffffff;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .button {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      color: #ffffff;
+      background-color: #28a745;
+      text-decoration: none;
+      border-radius: 5px;
+    }
+    .button:hover {
+      background-color: #218838;
+    }
+    .footer {
+      margin-top: 20px;
+      font-size: 12px;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Welcome Back!</h1>
+    <p>Hello,</p>
+    <p>We’re happy to let you know that your account has been successfully reactivated. You can now log in and continue using our services as usual.</p>
+    <p>If you did not request this reactivation or have any concerns, please contact our support team immediately.</p>
+    <div class="footer">
+      <p>© 2024 Your Company. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>
+`
+return html
+}

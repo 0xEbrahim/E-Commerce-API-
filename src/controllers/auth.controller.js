@@ -10,6 +10,7 @@ import { sendPasswordToken } from "../utils/sendPasswordResetToken.js";
 import { sendOTP } from "../utils/sendOTP.js";
 import { sendTokenResponse } from "../utils/sendTokenResponse.js";
 import uploader from "../config/cloudinary.js";
+import { sendReactiveAccount } from "../utils/sendReactiveEmail.js";
 
 /**
  * @method signup
@@ -101,7 +102,15 @@ export const login = asyncHandler(async (req, res, next) => {
   const user = await User.findOne({ email: email });
   if (!user || !(await user.matchPassword(password, user.password)))
     return next(new APIError("Incorrect email or password", 401));
-
+  if (!user.isActive) {
+    if (Date.now() < user.reactiveBefore) {
+      await sendReactiveAccount(user);
+    } else {
+      return next(
+        new APIError("This account might be deleted or not found", 400)
+      );
+    }
+  }
   if (!user.emailConfirmed) {
     sendEmailToken(user);
     return res.status(403).json({

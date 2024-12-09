@@ -11,6 +11,11 @@ router.get("/me", isAuthenticated, userController.myProfile);
 router.get("/:id", userController.getUser);
 router.post("/secureAccount/:email", userController.secureAccount);
 router.patch(
+  "/deactivateAccount",
+  isAuthenticated,
+  userController.deactivateAccount
+);
+router.patch(
   "/updateProfile",
   isAuthenticated,
   uploadSingle,

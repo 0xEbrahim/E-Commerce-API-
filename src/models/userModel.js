@@ -68,6 +68,9 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    reactiveBefore: {
+      type: Date,
+    },
     lastOnline: {
       type: Date,
       default: new Date("1990-01-01"),

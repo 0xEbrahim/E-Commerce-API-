@@ -6,6 +6,7 @@ import APIFeatures from "../utils/APIFeatures.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { sendEmailToken } from "../utils/sendEmailToken.js";
 import { sendConfirmPasswordChangeToken } from "../utils/sendConfirmPasswordChange.js";
+import { sendDeactiveAccount } from "../utils/sendDeactivated.js";
 
 export const myProfile = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.user._id).select("name email avatar");
@@ -135,6 +136,18 @@ export const deleteUser = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
   const user = await User.findByIdAndDelete(id);
   if (user) return next(new APIError("User not found", 404));
+  res.status(204).json({
+    status: "success",
+    data: null,
+  });
+});
+
+export const deactivateAccount = asyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.user._id);
+  if (!user) return next(new APIError("Bad request", 500));
+  res.clearCookie("jwt");
+  await sendDeactiveAccount(user);
+  await user.save();
   res.status(204).json({
     status: "success",
     data: null,

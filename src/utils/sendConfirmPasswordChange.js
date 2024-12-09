@@ -7,7 +7,7 @@ export const sendConfirmPasswordChangeToken = async (user) => {
   const html = generatechangePasswordConfirmTemplate(user.email);
   const data = {
     email: user.email,
-    subject: "Password reset",
+    subject: "Confirm Password Change",
     html,
   };
   await sendEmail(data);
