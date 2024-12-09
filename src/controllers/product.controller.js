@@ -3,6 +3,7 @@ import uploader from "../config/cloudinary.js";
 import Product from "../models/productModel.js";
 import APIError from "../utils/APIError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import APIFeatures from "../utils/APIFeatures.js";
 
 export const createProduct = asyncHandler(async (req, res, next) => {
   const { name, price, description, quantity, category } = req.body;
@@ -36,6 +37,21 @@ export const createProduct = asyncHandler(async (req, res, next) => {
     status: "success",
     data: {
       product,
+    },
+  });
+});
+
+export const getAllProducts = asyncHandler(async (req, res, next) => {
+  const features = new APIFeatures(Product.find(), req.query)
+    .filter()
+    .sort()
+    .fieldsLimit()
+    .paginate();
+  const products = await features.query;
+  res.status(200).json({
+    status: "success",
+    data: {
+      products,
     },
   });
 });
