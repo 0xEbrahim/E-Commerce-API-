@@ -53,7 +53,13 @@ export const getUser = asyncHandler(async (req, res, next) => {
 export const updatePassword = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.user._id);
   if (!user) return next(new APIError("Invalid or deactivated user", 400));
-  const { password } = req.body;
+  const { oldPassword, password } = req.body;
+  if (!(await user.matchPassword(oldPassword, user.password)))
+    return next(new APIError("Old password is incorrect", 401));
+  if (oldPassword === password)
+    return next(
+      new APIError("New password can't be the same as the old password", 400)
+    );
   user.password = password;
   await sendConfirmPasswordChangeToken(user);
   await user.save();
