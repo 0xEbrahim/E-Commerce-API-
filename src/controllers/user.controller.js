@@ -64,6 +64,8 @@ export const updatePassword = asyncHandler(async (req, res, next) => {
   });
 });
 
+
+// TODO: handle if the user use the same email seperatly
 // Update user's info exept passwords
 export const updateUserProfile = asyncHandler(async (req, res, next) => {
   const { name, email } = req.body;
