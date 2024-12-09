@@ -88,7 +88,7 @@ const userSchema = new mongoose.Schema(
       default: undefined,
     },
   },
-  { timestamps: true, toJSON: true }
+  { timestamps: true, toJSON: true, toObject: true }
 );
 
 userSchema.index({ slug: 1 });
