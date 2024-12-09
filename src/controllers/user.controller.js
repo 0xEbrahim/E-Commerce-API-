@@ -130,3 +130,13 @@ export const secureAccount = asyncHandler(async (req, res, next) => {
     message: "Password reset successfully",
   });
 });
+
+export const deleteUser = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+  const user = await User.findByIdAndDelete(id);
+  if (user) return next(new APIError("User not found", 404));
+  res.status(204).json({
+    status: "success",
+    data: null,
+  });
+});
