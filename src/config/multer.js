@@ -46,7 +46,7 @@ export const productImagesResize = async (req, res, next) => {
       i
     ].path = `${__dirname}/../public/uploads/products/${req.files[i].filename}`;
     await sharp(req.files[i].buffer)
-      .resize({ height: 500, width: 500 })
+      .resize({ height: 1920, width: 1080 })
       .toFormat("jpeg")
       .jpeg({ quality: 90 })
       .toFile(req.files[i].path);
