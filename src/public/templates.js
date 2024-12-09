@@ -178,3 +178,65 @@ export const generateTwoStepAuthTemplate = (OTP) => {
 `;
   return html;
 };
+
+export const generatechangePasswordConfirmTemplate = (email) => {
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Password Change Confirmation</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 20px auto;
+      background-color: #ffffff;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .button {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      color: #ffffff;
+      background-color: #28a745;
+      text-decoration: none;
+      border-radius: 5px;
+    }
+    .button:hover {
+      background-color: #218838;
+    }
+    .footer {
+      margin-top: 20px;
+      font-size: 12px;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Password Changed</h1>
+    <p>Hello,</p>
+    <p>We noticed that the password for your account was recently changed. If you made this change, no further action is required.</p>
+    <p>If you did not change your password, please secure your account immediately by clicking the button below:</p>
+    <a href="https://localhost:5000/api/v1/users/secureAccount/${email}" class="button">Secure My Account</a>
+    <p>If you have any questions or concerns, please contact our support team.</p>
+    <div class="footer">
+      <p>© 2024 Your Company. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>
+`;
+  return html;
+};

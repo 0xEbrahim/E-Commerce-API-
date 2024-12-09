@@ -8,6 +8,7 @@ const router = express.Router();
 router.get("/", userController.getAllUsers);
 router.get("/me", isAuthenticated, userController.myProfile);
 router.get("/:id", userController.getUser);
+router.post("/secureAccount/:email", userController.secureAccount);
 router.patch(
   "/updateProfile",
   isAuthenticated,

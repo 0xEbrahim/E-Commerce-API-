@@ -5,6 +5,7 @@ import APIError from "../utils/APIError.js";
 import APIFeatures from "../utils/APIFeatures.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { sendEmailToken } from "../utils/sendEmailToken.js";
+import { sendConfirmPasswordChangeToken } from "../utils/sendConfirmPasswordChange.js";
 
 export const myProfile = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.user._id).select("name email avatar");
@@ -54,6 +55,7 @@ export const updatePassword = asyncHandler(async (req, res, next) => {
   if (!user) return next(new APIError("Invalid or deactivated user", 400));
   const { password } = req.body;
   user.password = password;
+  await sendConfirmPasswordChangeToken(user);
   await user.save();
   user.password = undefined;
   res.status(200).json({
@@ -63,7 +65,6 @@ export const updatePassword = asyncHandler(async (req, res, next) => {
     },
   });
 });
-
 
 // TODO: handle if the user use the same email seperatly
 // Update user's info exept passwords
@@ -98,5 +99,28 @@ export const updateUserProfile = asyncHandler(async (req, res, next) => {
     data: {
       user,
     },
+  });
+});
+
+export const secureAccount = asyncHandler(async (req, res, next) => {
+  const user = await User.findOne({
+    email: req.params.email,
+    passwordResetTokenExpires: { $gt: Date.now() },
+  });
+  if (!user)
+    return next(
+      new APIError(
+        "You cannot set a new password now, please contact the support if you have any problem",
+        400
+      )
+    );
+  const { password } = req.body;
+  user.passwordResetToken = undefined;
+  user.passwordResetTokenExpires = undefined;
+  user.password = password;
+  await user.save();
+  res.status(200).json({
+    status: "success",
+    message: "Password reset successfully",
   });
 });
