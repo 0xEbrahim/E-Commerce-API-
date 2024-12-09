@@ -25,7 +25,9 @@ const uploader = multer({
 });
 
 export const userImageResize = async (req, res, next) => {
-  if (!req.file) next();
+  // console.log("HERE");
+  // console.log(req.file)
+  if (!req.file) return next();
   req.file.filename = `user-${Math.random() * Date.now()}-${Date.now()}.jpeg`;
   req.file.path = `${__dirname}/../public/uploads/users/${req.file.filename}`;
   await sharp(req.file.buffer)
@@ -35,5 +37,6 @@ export const userImageResize = async (req, res, next) => {
     .toFile(req.file.path);
   next();
 };
+
 export const uploadSingle = uploader.single("image");
 export const uplaodMany = uploader.array("images");

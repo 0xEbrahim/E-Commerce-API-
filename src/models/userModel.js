@@ -91,7 +91,7 @@ const userSchema = new mongoose.Schema(
 userSchema.index({ slug: 1 });
 
 userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) next();
+  if (!this.isModified("password")) return next();
   this.password = await bcrypt.hash(this.password, 12);
   next();
 });
@@ -105,7 +105,7 @@ userSchema.pre("save", function (next) {
 });
 
 userSchema.pre("save", function (next) {
-  if (!this.isModified("password") || this.isNew) next();
+  if (!this.isModified("password") || this.isNew) return next();
   this.passwordChangedAt = Date.now() - 1000;
   next();
 });
@@ -141,7 +141,7 @@ userSchema.methods.createOTP = function () {
   });
   const encrypted = crypto.createHash("sha256").update(otp).digest("hex");
   this.OTP = encrypted;
-  this.OTPExpires = Date.now() + 10 * 60  * 1000;
+  this.OTPExpires = Date.now() + 10 * 60 * 1000;
   return otp;
 };
 
