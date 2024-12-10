@@ -3,6 +3,7 @@ import User from "../models/userModel.js";
 import Product from "../models/productModel.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import APIError from "../utils/APIError.js";
+import APIFeatures from "../utils/APIFeatures.js";
 
 export const createReview = asyncHandler(async (req, res, next) => {
   let { productId } = req.params;
@@ -26,7 +27,35 @@ export const createReview = asyncHandler(async (req, res, next) => {
   });
 });
 
-export const getAllReviews = asyncHandler(async (req, res, next) => {});
-export const getReview = asyncHandler(async (req, res, next) => {});
+export const getAllReviews = asyncHandler(async (req, res, next) => {
+  let { productId } = req.params;
+  if (!productId) productId = req.body.productId;
+  const filter = {};
+  if (productId) filter.product = productId;
+  const features = new APIFeatures(Review.find(filter), req.query)
+    .filter()
+    .sort()
+    .fieldsLimit()
+    .paginate();
+  const reviews = await features.query;
+  res.status(200).json({ status: "success", data: { reviews } });
+});
+export const getReview = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+  const review = await Review.findById(id);
+  if (!review) return next(new APIError("Review not found", 404));
+  res.status(200).json({
+    status: "success",
+    data: { review },
+  });
+});
 export const updateReview = asyncHandler(async (req, res, next) => {});
-export const deleteReview = asyncHandler(async (req, res, next) => {});
+export const deleteReview = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+  const review = await Review.findByIdAndDelete(id);
+  if (!review) return next(new APIError("Review not found", 404));
+  res.status(204).json({
+    status: "success",
+    data: null,
+  });
+});
