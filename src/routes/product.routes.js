@@ -10,5 +10,5 @@ router.post(
   productImagesResize,
   productController.createProduct
 );
-
+router.get("/:id", productController.getProduct);
 export default router;

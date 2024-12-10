@@ -55,3 +55,15 @@ export const getAllProducts = asyncHandler(async (req, res, next) => {
     },
   });
 });
+
+export const getProduct = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+  const product = await Product.findById(id);
+  if (!product) return next(new APIError("Product not found", 404));
+  res.status(200).json({
+    status: "success",
+    data: {
+      product,
+    },
+  });
+});
