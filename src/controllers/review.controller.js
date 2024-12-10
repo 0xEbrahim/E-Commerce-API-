@@ -25,3 +25,8 @@ export const createReview = asyncHandler(async (req, res, next) => {
     },
   });
 });
+
+export const getAllReviews = asyncHandler(async (req, res, next) => {});
+export const getReview = asyncHandler(async (req, res, next) => {});
+export const updateReview = asyncHandler(async (req, res, next) => {});
+export const deleteReview = asyncHandler(async (req, res, next) => {});
