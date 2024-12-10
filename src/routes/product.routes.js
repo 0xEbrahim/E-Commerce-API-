@@ -11,4 +11,5 @@ router.post(
   productController.createProduct
 );
 router.get("/:id", productController.getProduct);
+router.get("/:id", productController.deleteProduct);
 export default router;

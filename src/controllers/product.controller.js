@@ -67,3 +67,13 @@ export const getProduct = asyncHandler(async (req, res, next) => {
     },
   });
 });
+
+export const deleteProduct = asyncHandler(async (req, res, next) => {
+  const { id } = req.body;
+  const product = await Product.findByIdAndDelete(id);
+  if (!product) return next(new APIError("product not found", 404));
+  res.status(204).json({
+    status: "success",
+    data: null,
+  });
+});
