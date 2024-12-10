@@ -29,7 +29,7 @@ const reviewSchema = new mongoose.Schema(
 
 reviewSchema.index({ product: 1, user: 1 });
 
-reviewSchema.methods.calcAverage = async function (id) {
+reviewSchema.statics.calcAverage = async function (id) {
   const stats = await this.aggregate([
     {
       $match: { product: id },
@@ -37,14 +37,14 @@ reviewSchema.methods.calcAverage = async function (id) {
     {
       $group: {
         _id: "$product",
-        avg: { $avg: "$ratings" },
+        avg: { $avg: "$rating" },
         nom: { $sum: 1 },
       },
     },
   ]);
   if (stats.length > 0) {
     await Product.findByIdAndUpdate(id, {
-      ratingsAverage: stats[0].avg,
+      ratingsAverage: Math.round(stats[0].avg * 10) / 10,
       ratingsQuantity: stats[0].nom,
     });
   } else {
@@ -56,11 +56,11 @@ reviewSchema.methods.calcAverage = async function (id) {
 };
 
 reviewSchema.post("save", async function () {
-  await this.constructor.calcAverageRating(this.product);
+  await this.constructor.calcAverage(this.product);
 });
 
 reviewSchema.post(/^findOneAnd/, async function (doc) {
-  await doc.constructor.calcAverageRating(doc.product);
+  await doc.constructor.calcAverage(doc.product);
 });
 
 export default mongoose.model("Review", reviewSchema);
