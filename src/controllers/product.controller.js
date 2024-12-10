@@ -8,28 +8,28 @@ import APIFeatures from "../utils/APIFeatures.js";
 export const createProduct = asyncHandler(async (req, res, next) => {
   const { name, price, description, quantity, category } = req.body;
   let images;
+  let main;
+  let url;
+  let urls;
   if (req.files) {
     images = req.files;
-  }
-  const main = images[0].path;
-  const subs = [];
-  for (let i = 1; i < images.length; i++) {
-    subs.push(images[i].path);
-  }
-  const urls = [];
-  const mainUrl = await uploader(main);
-  fs.unlinkSync(main);
-  for (let i = 0; i < subs.length; i++) {
-    const uploaded = await uploader(subs[i]);
-    urls.push(uploaded.url);
-    fs.unlinkSync(subs[i]);
+    main = images[0].path;
+    let mainUrl = await uploader(main);
+    url = mainUrl.url;
+    urls = images.length > 1 ? [] : undefined;
+    fs.unlinkSync(main);
+    for (let i = 1; i < images.length; i++) {
+      const uploaded = await uploader(images[i].path);
+      urls.push(uploaded.url);
+      fs.unlinkSync(images[i].path);
+    }
   }
   const product = await Product.create({
     name,
     description,
     price,
     quantity,
-    mainImage: mainUrl.url,
+    mainImage: url,
     subImages: urls,
     category,
   });
@@ -69,11 +69,53 @@ export const getProduct = asyncHandler(async (req, res, next) => {
 });
 
 export const deleteProduct = asyncHandler(async (req, res, next) => {
-  const { id } = req.body;
+  const { id } = req.params;
   const product = await Product.findByIdAndDelete(id);
   if (!product) return next(new APIError("product not found", 404));
   res.status(204).json({
     status: "success",
     data: null,
+  });
+});
+
+export const updateProduct = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+  const { name, quantity, price, description } = req.body;
+  let images;
+  let main;
+  let url;
+  let urls;
+  if (req.files) {
+    images = req.files;
+    main = images[0].path;
+    let mainUrl = await uploader(main);
+    url = mainUrl.url;
+    urls = images.length > 1 ? [] : undefined;
+    fs.unlinkSync(main);
+    for (let i = 1; i < images.length; i++) {
+      const uploaded = await uploader(images[i].path);
+      urls.push(uploaded.url);
+      fs.unlinkSync(images[i].path);
+    }
+  }
+
+  const product = await Product.findByIdAndUpdate(
+    id,
+    {
+      name,
+      quantity,
+      price,
+      description,
+      mainImage: url,
+      subImages: urls,
+    },
+    { new: true }
+  );
+  if (!product) return next(new APIError("Product not found", 404));
+  res.status(200).json({
+    status: "success",
+    data: {
+      product,
+    },
   });
 });

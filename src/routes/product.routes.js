@@ -11,5 +11,11 @@ router.post(
   productController.createProduct
 );
 router.get("/:id", productController.getProduct);
-router.get("/:id", productController.deleteProduct);
+router.delete("/:id", productController.deleteProduct);
+router.patch(
+  "/:id",
+  uploadMany,
+  productImagesResize,
+  productController.updateProduct
+);
 export default router;
