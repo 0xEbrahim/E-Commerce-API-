@@ -1,0 +1,4 @@
+node_modules
+.env
+.VSCodeCounter
+./src/public/uploads/*
