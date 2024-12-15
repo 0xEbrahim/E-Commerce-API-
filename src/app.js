@@ -28,6 +28,8 @@ process.on("uncaughtException", (err) => {
  * TODO: logging
  */
 
+// Application is dead
+
 /**
  *  TODO: Add application validation
  */
